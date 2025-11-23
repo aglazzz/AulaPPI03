@@ -70,33 +70,21 @@ server.get("/cadastroUsuario", (requisicao, resposta) => {
                                 <!-- O atributo 'id' identifica um elemento HTML na pagina para o navegador -->
                                 <!-- O atributo 'name' rotula o conteudo que esse elemento armazena para o destinatario -->
                                 <input type="text" class="form-control" id="nome" name="nome">
-                                <div class="valid-feedback">
-                                    Por favor, voce deve informar o nome do usuario.
-                                </div>
                             </div>
                             <div class="col-md-4">
                                 <label for="sobrenome" class="form-label">Sobrenome</label>
                                 <input type="text" class="form-control" id="sobrenome" name="sobrenome">
-                                <div class="valid-feedback">
-                                    Por favor, voce deve informar o sobrenome do usuario.
-                                </div>
                             </div>
                             <div class="col-md-4">
                                 <label for="usuario" class="form-label">Usuario</label>
                                 <div class="input-group has-validation">
                                 <span class="input-group-text" id="inputGroupPrepend">@</span>
                                 <input type="text" class="form-control" id="usuario" name="usuario" aria-describedby="inputGroupPrepend">
-                                <div class="invalid-feedback">
-                                    Por favor, escolha um nome de usuario.
-                                </div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <label for="cidade" class="form-label">Cidade</label>
                                 <input type="text" class="form-control" id="cidade" name="cidade">
-                                <div class="invalid-feedback">
-                                Please provide a valid city.
-                                </div>
                             </div>
                             <div class="col-md-3">
                                 <label for="uf" class="form-label">UF</label>
@@ -131,16 +119,10 @@ server.get("/cadastroUsuario", (requisicao, resposta) => {
                                     <option value="TO">Tocantins</option>
                                     <option value="EX">Estrangeiro</option>
                                 </select>
-                                <div class="invalid-feedback">
-                                    Por favor, selecione um estado.
-                                </div>
                             </div>
                             <div class="col-md-3">
                                 <label for="cep" class="form-label">CEP</label>
                                 <input type="text" class="form-control" id="cep" name="cep">
-                                <div class="invalid-feedback">
-                                    Por favor, informe um CEP valido.
-                                </div>
                             </div>
                             <div class="col-12">
                                 <button class="btn btn-primary" type="submit">Cadastrar</button>
@@ -163,8 +145,147 @@ server.post('/adicionarUsuario', (requisicao, resposta) => {
     const uf = requisicao.body.uf;
     const cep = requisicao.body.cep;
 
-    listaUsuarios.push({nome, sobrenome, usuario, cidade, uf, cep});
-    resposta.redirect("/listarUsuarios");
+    if(nome && sobrenome && usuario && cidade && uf && cep){
+        
+        listaUsuarios.push({nome, sobrenome, usuario, cidade, uf, cep});
+        resposta.redirect("/listarUsuarios");
+    }else{
+        let conteudo = `
+            <DOCTYPE html>
+            <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+                    <title>Document</title>
+                </head>
+                <body>
+                    <div class="container">
+                        <h1 class="text-center border m-3 p-3 bg-light">Cadastro de Usuario</h1>
+                        <form method="POST" action="/adicionarUsuario" class="row g-3 needs-validation m-3 p-3 bg-light" novalidate>
+                            <div class="col-md-4">
+                                <label for="nome" class="form-label">Nome</label>
+                                <!-- O atributo 'id' identifica um elemento HTML na pagina para o navegador -->
+                                <!-- O atributo 'name' rotula o conteudo que esse elemento armazena para o destinatario -->
+                                <input type="text" class="form-control" id="nome" name="nome" value="${nome}">
+                        `;
+        if(!nome){
+            conteudo += `
+                <div>
+                    <p class="text-danger">Por favor, voce deve informar o nome do usuario.</p>
+                </div>`;                    
+        }
+
+        conteudo += `</div>
+                            <div class="col-md-4">
+                                <label for="sobrenome" class="form-label">Sobrenome</label>
+                                <input type="text" class="form-control" id="sobrenome" name="sobrenome" value="${sobrenome}">
+                            `;
+        if(!sobrenome){
+            conteudo += `
+                <div>
+                    <p class="text-danger">Por favor, voce deve informar o sobrenome do usuario.</p>
+                </div>`;  
+        }
+                       
+        
+        conteudo += `</div>
+                            <div class="col-md-4">
+                                <label for="usuario" class="form-label">Usuario</label>
+                                <div class="input-group has-validation">
+                                <span class="input-group-text" id="inputGroupPrepend">@</span>
+                                <input type="text" class="form-control" id="usuario" name="usuario" aria-describedby="inputGroupPrepend" value="${usuario}">
+                                </div>
+                            `;
+        if(!usuario){
+            conteudo += `
+                <div>
+                    <p class="text-danger">Por favor, voce deve informar o usuario.</p>
+                </div>`;
+        }
+
+
+        conteudo += `</div>
+                            <div class="col-md-6">
+                                <label for="cidade" class="form-label">Cidade</label>
+                                <input type="text" class="form-control" id="cidade" name="cidade" value="${cidade}">
+                            `;
+        if(!cidade){
+            conteudo += `
+                <div>
+                    <p class="text-danger">Por favor, voce deve informar a cidade do usuario.</p>
+                </div>`;
+        }
+
+        conteudo += `</div>
+                            <div class="col-md-3">
+                                <label for="uf" class="form-label">UF</label>
+                                <select class="form-select" id="uf" name="uf" value="${uf}">
+                                    <option selected disabled value="">Selecione um estado</option>
+                                    <option value="AC">Acre</option>
+                                    <option value="AL">Alagoas</option>
+                                    <option value="AP">Amapá</option>
+                                    <option value="AM">Amazonas</option>
+                                    <option value="BA">Bahia</option>
+                                    <option value="CE">Ceará</option>
+                                    <option value="DF">Distrito Federal</option>
+                                    <option value="ES">Espírito Santo</option>
+                                    <option value="GO">Goiás</option>
+                                    <option value="MA">Maranhão</option>
+                                    <option value="MT">Mato Grosso</option>
+                                    <option value="MS">Mato Grosso do Sul</option>
+                                    <option value="MG">Minas Gerais</option>
+                                    <option value="PA">Pará</option>
+                                    <option value="PB">Paraíba</option>
+                                    <option value="PR">Paraná</option>
+                                    <option value="PE">Pernambuco</option>
+                                    <option value="PI">Piauí</option>
+                                    <option value="RJ">Rio de Janeiro</option>
+                                    <option value="RN">Rio Grande do Norte</option>
+                                    <option value="RS">Rio Grande do Sul</option>
+                                    <option value="RO">Rondônia</option>
+                                    <option value="RR">Roraima</option>
+                                    <option value="SC">Santa Catarina</option>
+                                    <option value="SP">São Paulo</option>
+                                    <option value="SE">Sergipe</option>
+                                    <option value="TO">Tocantins</option>
+                                    <option value="EX">Estrangeiro</option>
+                                </select>
+                            `;
+        if(!uf){
+            conteudo += `
+                <div>
+                    <p class="text-danger">Por favor, voce deve informar a UF do usuario.</p>
+                </div>`;
+        }
+        
+        conteudo += `</div>
+                            <div class="col-md-3">
+                                <label for="cep" class="form-label">CEP</label>
+                                <input type="text" class="form-control" id="cep" name="cep" value="${cep}">
+                            `;
+        if(!cep){
+            conteudo += `
+                <div>
+                    <p class="text-danger">Por favor, voce deve informar o CEP do usuario.</p>
+                </div>`;
+        }
+
+        conteudo += `</div>
+                            <div class="col-12">
+                                <button class="btn btn-primary" type="submit">Cadastrar</button>
+                                <a class="btn btn-secondary" href="/">Voltar</a>
+                            </div>
+                        </form>
+                    </div>
+                </body>
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+            </html>`;
+
+        resposta.send(conteudo);
+        
+    }
+
+
 });
 
 server.get("/listarUsuarios", (requisicao, resposta) => {
